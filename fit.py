@@ -16,12 +16,12 @@ df = df.drop(columns=["tweet_date_created", "language", "sentiment_score"])
 
 def clear_sentences(sentence):
     try:
-        sentence = sentence.encode("latin").decode("utf-8")
+        sentence = sentence.encode("latin").decode("windows-1252")
     except:
         pass
 
     try: 
-        sentence = sentence.encode("cp1252").decode("utf-8")
+        sentence = sentence.encode("cp1252").decode("windos-1252")
     except:
         pass
     return sentence
