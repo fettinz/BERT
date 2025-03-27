@@ -9,7 +9,7 @@ import os
 
 '''-------------------READ DATA-------------------'''
 train_file_path = 'betsentiment-IT-tweets-sentiment-players.csv' 
-df = pd.read_csv(train_file_path, encoding='utf-8')
+df = pd.read_csv(train_file_path, encoding='windows-1252')
 df = df.drop(columns=["tweet_date_created", "language", "sentiment_score"])
 
 '''-------------------PREPROCESSING-------------------'''
