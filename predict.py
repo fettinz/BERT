@@ -28,7 +28,7 @@ def load_model():
     # ---------------- RICOSTRUISCI MAPPING LABELS ----------------
     df = pd.read_csv(train_file_path, encoding='utf-8')
     train_dataset = Dataset.from_pandas(df)
-    unique_labels = train_dataset.unique("Label")
+    unique_labels = train_dataset.unique("sentiment")
     label2id = {label: i for i, label in enumerate(unique_labels)}
     id2label = {i: label for i, label in enumerate(unique_labels)}
 
@@ -37,7 +37,7 @@ def test_model_on_test_set():
     test_data = pd.read_csv(test_file_path, encoding='utf-8')
     assert 'Text' in test_data.columns, "Il csv deve contenere una colonna 'Text'"
 
-    for i, text in enumerate(test_data["Text"]):
+    for i, text in enumerate(test_data["tweet_text"]):
         inputs = tokenizer(text, return_tensors="pt", padding="max_length", truncation=True)
         with torch.no_grad():
             outputs = model(**inputs)

@@ -8,13 +8,11 @@ from math import ceil
 import os
 
 '''-------------------READ DATA-------------------'''
-train_file_path = 'train.csv' 
+train_file_path = 'betsentiment-IT-tweets-sentiment-players.csv' 
 df = pd.read_csv(train_file_path, encoding='utf-8')
+df = df.drop(columns=["tweet_date_created", "language", "sentiment_score"])
 
 '''-------------------PREPROCESSING-------------------'''
-
-assert 'Text' in df.columns, "Il csv deve contenere una colonna 'Text'"
-assert 'Label' in df.columns, "Il csv deve contenere una colonna 'Label'"
 
 def clear_sentences(sentence):
     try:
@@ -28,27 +26,31 @@ def clear_sentences(sentence):
         pass
     return sentence
 
-train_data, eval_data = train_test_split(df, test_size=0.2, random_state=42)
+# Primo split: 80% train, 20% temp (val + test)
+train_data, temp_data = train_test_split(df, test_size=0.2, random_state=42)
+
+# Secondo split: divide temp in 50% val, 50% test → 10% ciascuno rispetto al totale
+eval_data, test_data = train_test_split(temp_data, test_size=0.5, random_state=42)
+# Salva anche il test set per il testing successivo
+test_data.to_csv("test.csv", index=False)
 
 train_dataset = Dataset.from_pandas(train_data)
 eval_dataset = Dataset.from_pandas(eval_data)
 
-unique_labels = train_dataset.unique("Label")
+unique_labels = train_dataset.unique("sentiment")
 label2id = {label: i for i, label in enumerate(unique_labels)}
 id2label = {i: label for i, label in enumerate(unique_labels)}
 
 def map_labels_and_clear_sentences(example):
-    example["label"] = label2id[example["Label"]]
-    example["Text"] = clear_sentences(example["Text"])
+    example["sentiment"] = label2id[example["sentiment"]]
+    example["tweet_text"] = clear_sentences(example["tweet_text"])
     return example
 
 train_dataset = train_dataset.map(map_labels_and_clear_sentences)
 eval_dataset = eval_dataset.map(map_labels_and_clear_sentences)
 
-train_dataset = train_dataset.rename_column("label", "labels")
-eval_dataset = eval_dataset.rename_column("label", "labels")
-train_dataset = train_dataset.cast_column("labels", ClassLabel(names=unique_labels))
-eval_dataset = eval_dataset.cast_column("labels", ClassLabel(names=unique_labels))
+train_dataset = train_dataset.cast_column("sentiment", ClassLabel(names=unique_labels))
+eval_dataset = eval_dataset.cast_column("sentiment", ClassLabel(names=unique_labels))
 
 '''-------------------FINE PREPROCESSING-------------------'''
 
@@ -58,8 +60,8 @@ model = BertForSequenceClassification.from_pretrained(model_name, num_labels=3)
 model.to("cpu")
 
 def tokenize_function(examples):
-    examples["Text"] = [str(text) for text in examples["Text"]]
-    return tokenizer(examples["Text"], padding="max_length", truncation=True)
+    examples["tweet_text"] = [str(text) for text in examples["tweet_text"]]
+    return tokenizer(examples["tweet_text"], padding="max_length", truncation=True)
 
 tokanized_train_dataset = train_dataset.map(tokenize_function, batched=True)
 tokanized_eval_dataset = eval_dataset.map(tokenize_function, batched=True)
