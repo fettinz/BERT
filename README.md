@@ -1,4 +1,4 @@
 # 🧠 BERT - Bidirectional Encoder Representations from Transformers
-“Custom BERT implementation using HuggingFace Transformers and Datasets – simple, modular, and ready to train.”
+**Custom BERT implementation using HuggingFace Transformers and Datasets** – _simple, modular, and ready to train_
 
-pip install -r requirements.txt
+>_pip install -r requirements.txt_
