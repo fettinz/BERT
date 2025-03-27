@@ -21,7 +21,7 @@ def clear_sentences(sentence):
         pass
 
     try: 
-        sentence = sentence.encode("cp1252").decode("windos-1252")
+        sentence = sentence.encode("cp1252").decode("windows-1252")
     except:
         pass
     return sentence
