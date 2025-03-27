@@ -48,9 +48,11 @@ def map_labels_and_clear_sentences(example):
 
 train_dataset = train_dataset.map(map_labels_and_clear_sentences)
 eval_dataset = eval_dataset.map(map_labels_and_clear_sentences)
+train_dataset = train_dataset.rename_column("sentiment", "labels")
+eval_dataset = eval_dataset.rename_column("sentiment", "labels")
 
-train_dataset = train_dataset.cast_column("sentiment", ClassLabel(names=unique_labels))
-eval_dataset = eval_dataset.cast_column("sentiment", ClassLabel(names=unique_labels))
+train_dataset = train_dataset.cast_column("labels", ClassLabel(names=unique_labels))
+eval_dataset = eval_dataset.cast_column("labels", ClassLabel(names=unique_labels))
 
 '''-------------------FINE PREPROCESSING-------------------'''
 

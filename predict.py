@@ -5,14 +5,12 @@ from datasets import Dataset
 import os
 
 
-tokenizer = None
-model = None
-label2id = None
-id2label = None
 test_file_path = 'test.csv'
 
 # ---------------- CONFIGURAZIONE ----------------
 def load_model(): 
+    global tokenizer, model, label2id, id2label 
+    
     saved_model_path = os.path.abspath(os.path.join("saved_model", "sentiment-model"))
     saved_tokenizer_path = os.path.abspath(os.path.join("saved_tokenizer", "sentiment-model"))
     assert os.path.exists(saved_tokenizer_path), f"Tokenizer non trovato in: {saved_tokenizer_path}"
